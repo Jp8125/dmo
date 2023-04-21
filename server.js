@@ -10,7 +10,7 @@ const db = mysql.createConnection({
   host:'localhost',
   user: 'root',
   password: '',
-  database: 'created_ai'
+  database: 'demo'
 });
 
 // Connect to MySQL

@@ -1,0 +1,19 @@
+get ---------http://localhost:3000/products -- get all products
+get ---------http://localhost:3000/products/2 --get specific product
+delete ------http://localhost:3000/products/2 --delete specific product
+post ---------http://localhost:3000/products  --post  product
+data
+{
+    "name":"demo",
+    "description":"this is demo",
+    "price":4000,
+    "quantity":4
+}
+put --------http://localhost:3000/products/3 -update product
+data
+{
+    "name":"parleg",
+    "description":"buiscuit",
+    "price":40,
+    "quantity":4
+}
