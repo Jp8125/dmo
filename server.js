@@ -234,7 +234,57 @@ app.post('/categories', (req, res) => {
             res.send('Item added to order successfully!');
           });
         });
-      
+
+// route to register a new user
+app.post('/register', (req, res) => {
+  const { name, email, password } = req.body;
+
+  // validate request
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: 'Please provide name, email, and password.' });
+  }
+  const salt = bcrypt.genSaltSync(10);
+  const hashedPassword = bcrypt.hashSync(password, salt);
+  // insert the new user into the database
+  const query = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
+  db.query(query, [name, email, hashedPassword], (error, results, fields) => {
+    if (error) {
+      console.error('Error registering user:', error);
+      return res.status(500).json({ message: 'An error occurred while registering the user.' });
+    }
+
+    res.status(200).json({ message: 'User registered successfully.' });
+  });
+});
+
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+
+  // find the user by email
+  const sql = 'SELECT * FROM users WHERE email = ?';
+  const values = [email];
+  db.query(sql, values, (err, results) => {
+    if (err) {
+      console.log('Error logging in:', err);
+      res.status(500).json({ message: 'Error logging in.' });
+    } else if (results.length === 0) {
+      res.status(400).json({ message: 'Invalid email' });
+    } else {
+      // compare the password
+      const user = results[0];
+      console.log(results,password)
+      const passwordMatch = bcrypt.compareSync(password, user.password);
+      if (!passwordMatch) {
+        res.status(400).json({ message: 'Invalid email or password.' });
+      } else {
+        // create a token and send it in the response
+        const token = jwt.sign({ id: user.id }, 'tatakaye', { expiresIn: '1h' });
+        res.header('auth-token', token).json({ message: 'Logged in successfully.', tk:token });
+      }
+    }
+  });
+});
+
         app.listen(port, () => {
           console.log(`Server is running on port ${port}.`);
         });
